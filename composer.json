@@ -21,6 +21,8 @@
         "drupal/core-project-message": "^10.3",
         "drupal/core-recommended": "^10.3",
         "drupal/mahi": "^1.0",
+        "drupal/paragraphs": "^1.17",
+        "drupal/pathauto": "^1.12",
         "drupal/thex": "^10.0",
         "drupal/xara": "^10.1",
         "drush/drush": "^12.5"
