@@ -1,0 +1,27 @@
+uuid: 8f144ef5-0687-45e1-ab15-58d0ff3356d8
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.footer
+  module:
+    - system
+  theme:
+    - xara
+_core:
+  default_config_hash: 4y5wWCxplKbNliutHxezAGgv3_Js3sNIIJ7plrrkqOw
+id: xara_footer
+theme: xara
+region: hidden
+weight: -11
+provider: null
+plugin: 'system_menu_block:footer'
+settings:
+  id: 'system_menu_block:footer'
+  label: 'Footer menu'
+  label_display: '0'
+  provider: system
+  level: 1
+  depth: 0
+  expand_all_items: false
+visibility: {  }
