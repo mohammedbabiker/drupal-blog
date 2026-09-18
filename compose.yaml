@@ -102,4 +102,4 @@ networks:
 volumes:
   drupal_mysql:
     name: drupal_mysql
-    driver: local
+    external: true
