@@ -1,0 +1,105 @@
+services:
+  db:
+    image: mysql:26
+    container_name: drupal_sql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - drupal_mysql:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - -h
+        - 127.0.0.1
+        - -p${MYSQL_ROOT_PASSWORD}
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - proxy
+  phpmyadmin:
+    image: phpmyadmin:5
+    container_name: drupal_pma
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PMA_HOST: db
+      UPLOAD_LIMIT: 256M
+    ports:
+      - ${PHPMYADMIN_PORT:-8081}:80
+    networks:
+      - proxy
+  # One-shot container that fixes filesystem permissions on every `up`.
+  drupal-init:
+    image: drupal:11
+    container_name: drupal_init
+    user: root
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        set -e
+        mkdir -p /opt/drupal/web/sites/default/files
+        chown -R www-data:www-data /opt/drupal/web/sites/default
+        chmod -R 775 /opt/drupal/web/sites/default/files
+        echo "drupal-init: files dir ready"
+    volumes:
+      - ./web:/opt/drupal/web
+    networks:
+      - proxy
+    restart: no
+  drupal:
+    image: drupal:11
+    container_name: drupal
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      drupal-init:
+        condition: service_completed_successfully
+    ports:
+      - ${DRUPAL_PORT:-8080}:80
+    volumes:
+      - ./web:/opt/drupal/web
+      - ./vendor:/opt/drupal/vendor
+      - ./config/sync:/opt/drupal/config/sync
+      - type: bind
+        source: ./composer.json
+        target: /opt/drupal/composer.json
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ./composer.lock
+        target: /opt/drupal/composer.lock
+        bind:
+          create_host_path: false
+    networks:
+      - proxy
+
+  redis:
+    image: redis:alpine
+    container_name: drupal_rds
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - ./redis:/data
+networks:
+  proxy:
+    name: proxy
+    driver: bridge
+    external: true
+volumes:
+  drupal_mysql:
+    name: drupal_mysql
+    driver: local
