@@ -1,8 +1,13 @@
+x-common: &common # YAML feature, not Compose-specific, but Compose supports it.
+  restart: unless-stopped
+  networks:
+    - proxy
+
 services:
   db:
+    <<: *common
     image: mysql:26
     container_name: drupal_sql
-    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -22,12 +27,10 @@ services:
       timeout: 5s
       retries: 20
       start_period: 30s
-    networks:
-      - proxy
   phpmyadmin:
+    <<: *common
     image: phpmyadmin:5
     container_name: drupal_pma
-    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -36,10 +39,9 @@ services:
       UPLOAD_LIMIT: 256M
     ports:
       - ${PHPMYADMIN_PORT:-8081}:80
-    networks:
-      - proxy
   # One-shot container that fixes filesystem permissions on every `up`.
   drupal-init:
+    <<: *common
     image: drupal:11
     container_name: drupal_init
     user: root
@@ -55,13 +57,11 @@ services:
         echo "drupal-init: files dir ready"
     volumes:
       - ./web:/opt/drupal/web
-    networks:
-      - proxy
     restart: no
   drupal:
+    <<: *common
     image: drupal:11
     container_name: drupal
-    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -83,15 +83,10 @@ services:
         target: /opt/drupal/composer.lock
         bind:
           create_host_path: false
-    networks:
-      - proxy
-
   redis:
+    <<: *common
     image: redis:alpine
     container_name: drupal_rds
-    restart: unless-stopped
-    networks:
-      - proxy
     volumes:
       - ./redis:/data
 networks:
