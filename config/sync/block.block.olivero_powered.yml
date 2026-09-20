@@ -1,6 +1,6 @@
 uuid: dcfc474a-e251-482e-b2c6-8b6ff3bc291e
 langcode: en
-status: true
+status: false
 dependencies:
   module:
     - system
@@ -16,7 +16,7 @@ provider: null
 plugin: system_powered_by_block
 settings:
   id: system_powered_by_block
-  label: 'Powered by Drupal'
-  label_display: '0'
+  label: 'Mohammed Babiker. Made with love.'
+  label_display: visible
   provider: system
 visibility: {  }

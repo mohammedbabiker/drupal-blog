@@ -1,0 +1,23 @@
+uuid: 72d002ee-9f1b-49f7-8166-98bad57c9028
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.blog
+  module:
+    - node
+id: automatic_blogs_urls
+label: 'Automatic blogs urls'
+type: 'canonical_entities:node'
+pattern: '/blog/[node:created:custom:Y]/[node:created:custom:M]/[node:created:custom:d]/[node:title]'
+selection_criteria:
+  33ee651a-803d-413d-9f8d-259a160d06dd:
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: node
+    bundles:
+      blog: blog
+selection_logic: and
+weight: -5
+relationships: {  }

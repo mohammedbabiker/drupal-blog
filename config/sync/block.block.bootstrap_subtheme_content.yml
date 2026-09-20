@@ -1,17 +1,17 @@
-uuid: 6a893371-2e27-446f-b7e3-99fa0fd73005
+uuid: f8e2cb19-3520-4b2d-8890-13fd9539d5cd
 langcode: en
 status: true
 dependencies:
   module:
     - system
   theme:
-    - olivero
+    - bootstrap_subtheme
 _core:
-  default_config_hash: erQSEZF2XUjNmgTl0uNRBzmg18ZGXwUcw2FhApoeuHk
-id: olivero_content
-theme: olivero
+  default_config_hash: 1JzmuTXzMIWbXm-HRVyJlQZtc9zkp3fYnilF2FtjKv0
+id: bootstrap_subtheme_content
+theme: bootstrap_subtheme
 region: content
-weight: -7
+weight: -3
 provider: null
 plugin: system_main_block
 settings:
