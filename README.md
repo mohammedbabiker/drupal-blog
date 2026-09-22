@@ -41,7 +41,8 @@ The final layout will look like this:
 ```
 drupal-local/
 ├── .env
-├── docker-compose.yml
+├── compose.dev.yaml
+├── compose.prod.yaml
 ├── bootstrap.sh
 ├── composer.json            ← seeded from the image on first run
 ├── composer.lock            ← seeded from the image on first run
@@ -78,11 +79,11 @@ Change the passwords if you like; they only matter locally.
 
 ## 3. Setup `compose.dev.yaml`
 
-Four spastic docker image
+Four spastic docker images
 
 ---
 
-## 4. Stat up `bootstrap.sh`
+## 4. Start up `bootstrap.sh`
 
 Make it executable:
 
@@ -95,7 +96,8 @@ chmod +x bootstrap.sh
 First run:
 
 ```bash
-./bootstrap.sh
+# Trigger ./bootstrap.sh see (make help) for more information
+make up
 ```
 
 What happens, in order:
@@ -166,7 +168,7 @@ installer never wrote it, which means `web/sites/default/` isn't writable
 from inside the container. Run:
 
 ```bash
-docker compose exec -u root drupal \
+docker compose -f compose.dev.yaml exec -u root drupal \
   chown -R www-data:www-data /opt/drupal/web/sites/default
 ```
 
@@ -183,14 +185,14 @@ make help
 ./bootstrap.sh
 
 # Drush
-docker compose exec drupal vendor/bin/drush status
-docker compose exec drupal vendor/bin/drush cr
-docker compose exec drupal vendor/bin/drush uli     # one-time login link
+docker compose -f compose.dev.yaml exec drupal vendor/bin/drush status
+docker compose -f compose.dev.yaml exec drupal vendor/bin/drush cr
+docker compose -f compose.dev.yaml exec drupal vendor/bin/drush uli     # one-time login link
 
 # Composer inside the container, then sync manifests back to the host
-docker compose exec drupal composer require drupal/admin_toolbar
-docker compose cp drupal:/opt/drupal/composer.json ./composer.json
-docker compose cp drupal:/opt/drupal/composer.lock ./composer.lock
+docker compose -f compose.dev.yaml exec drupal composer require drupal/admin_toolbar
+docker compose -f compose.dev.yaml cp drupal:/opt/drupal/composer.json ./composer.json
+docker compose -f compose.dev.yaml cp drupal:/opt/drupal/composer.lock ./composer.lock
 
 # phpMyAdmin
 open http://localhost:8081
