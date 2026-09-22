@@ -56,13 +56,13 @@ mkdir -p web/sites/default/files
 log "config/sync and web/sites/default/files exist"
 
 # ---------- 5. bring the stack up ----------
-log "docker compose up -d"
-$COMPOSE up -d
+log "docker compose -f compose.dev.yaml up -d"
+$COMPOSE -f compose.dev.yaml up -d
 
 # ---------- 6. wait for db to be healthy ----------
 log "waiting for db to be healthy…"
 for _ in $(seq 1 60); do
-  health="$($COMPOSE ps --format json db 2>/dev/null \
+  health="$($COMPOSE -f compose.dev.yaml ps --format json db 2>/dev/null \
     | sed -n 's/.*"Health":"\([^"]*\)".*/\1/p' || true)"
   [ "$health" = "healthy" ] && break
   sleep 1
@@ -73,14 +73,14 @@ log "db: ${health:-unknown}"
 # ---------- 7. wait for drupal-init to exit ----------
 log "waiting for drupal-init…"
 for _ in $(seq 1 30); do
-  state="$($COMPOSE ps -a --format json drupal-init 2>/dev/null \
+  state="$($COMPOSE -f compose.dev.yaml ps -a --format json drupal-init 2>/dev/null \
     | sed -n 's/.*"State":"\([^"]*\)".*/\1/p' || true)"
   [ "$state" = "exited" ] && break
   sleep 1
 done
-code="$($COMPOSE ps -a --format json drupal-init 2>/dev/null \
+code="$($COMPOSE -f compose.dev.yaml ps -a --format json drupal-init 2>/dev/null \
   | sed -n 's/.*"ExitCode":\([0-9]*\).*/\1/p' || true)"
-[ "${code:-1}" = "0" ] || warn "drupal-init exit code ${code:-unknown} — check: $COMPOSE logs drupal-init"
+[ "${code:-1}" = "0" ] || warn "drupal-init exit code ${code:-unknown} — check: $COMPOSE -f compose.dev.yaml logs drupal-init"
 log "drupal-init: done (exit ${code:-?})"
 
 # ---------- 8. summary ----------
@@ -89,6 +89,6 @@ log "ready:"
 echo "  Drupal      → http://localhost:${DRUPAL_PORT:-8080}"
 echo "  phpMyAdmin  → http://localhost:${PHPMYADMIN_PORT:-8081}"
 echo
-echo "  logs:   $COMPOSE logs -f"
-echo "  shell:  $COMPOSE exec drupal bash"
-echo "  drush:  $COMPOSE exec drupal vendor/bin/drush"
+echo "  logs:   $COMPOSE -f compose.dev.yaml logs -f"
+echo "  shell:  $COMPOSE -f compose.dev.yaml exec drupal bash"
+echo "  drush:  $COMPOSE -f compsoe.dev.yaml exec drupal vendor/bin/drush"

@@ -14,21 +14,21 @@ up: ## Start the Drupal stack
 	./bootstrap.sh
 
 down: ## Stop the Drupal stack
-	docker compose down
+	docker compose -f compose.dev.yaml down
 
 logs: ## Show the logs of the Drupal stack
-	docker compose logs -f
+	docker compose -f compose.dev.yaml logs -f
 
 shell: ## Open a shell in the Drupal container
-	docker compose exec drupal bash
+	docker compose -f compose.dev.yaml exec drupal bash
 
 drush: ## Run Drush commands in the Drupal container
-	docker compose exec drupal vendor/bin/drush $(ARGS)
+	docker compose -f compose.dev.yaml exec drupal vendor/bin/drush $(ARGS)
 
 composer: ## Run Composer commands in the Drupal container
-	docker compose exec drupal composer $(ARGS)
+	docker compose -f compose.dev.yaml exec drupal composer $(ARGS)
 
 reset: ## ⚠️  Reset the Drupal stack (remove containers, volumes, and files)
-	docker compose down -v
+	docker compose -f compose.dev.yaml down -v
 	rm -rf composer.json composer.lock web/sites/default/files
 	./bootstrap.sh
