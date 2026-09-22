@@ -2,8 +2,10 @@ name: Drupal Diploy CI/CD Pipeline
 on:
   push:
     branches: [ "main" ]
+    paths-ignore: ["**.md"]
   pull_request:
     branches: [ "main" ]
+    paths-ignore: ["**.md"]
 
 permissions:
   contents: read
